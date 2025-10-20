@@ -1,6 +1,6 @@
-# 🔐 Trading Deco - Smart Contracts
+# 🔐 Trading Deco - Smart Contracts v2.0
 
-**Professional Smart Contracts for Trading Deco Platform on Binance Smart Chain (BSC)**
+**Legal-Compliant Utility Token Architecture for AI Trading Platform**
 
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.20-blue)](https://soliditylang.org/)
 [![Hardhat](https://img.shields.io/badge/Hardhat-2.19.4-yellow)](https://hardhat.org/)
@@ -9,373 +9,423 @@
 
 ---
 
-## 📋 **Tabla de Contenidos**
+## ⚖️ Legal Compliance Notice
 
-- [Descripción](#-descripción)
-- [Contratos](#-contratos)
-- [Arquitectura](#-arquitectura)
-- [Instalación](#-instalación)
-- [Deployment](#-deployment)
-- [Testing](#-testing)
-- [Seguridad](#-seguridad)
-- [Integración con Backend](#-integración-con-backend)
+These smart contracts implement a **UTILITY TOKEN MODEL**, NOT an investment or security:
 
----
+- ✅ **Access Token**: DECO tokens provide software access (like API keys)
+- ✅ **Consumption Model**: Tokens are consumed during service usage
+- ✅ **Non-Custodial**: No holding periods or locked funds
+- ✅ **No Investment Language**: No promises of profit, yield, or returns
+- ✅ **Circular Economy**: Consumed tokens reallocated to new users
 
-## 🎯 **Descripción**
-
-Este repositorio contiene los **Smart Contracts** de la plataforma **Trading Deco**, diseñados para gestionar:
-
-- 💎 **Token AHT** (Algo Hybrid Trading): Token ERC20 de la plataforma
-- 💰 **AdminPool**: Gestión del 10% de comisiones administrativas
-- 🤝 **SponsorPool**: Gestión del 10% de comisiones de referidos
-
-Todos los contratos están desplegados en **Binance Smart Chain (BSC)** y siguen los estándares de **OpenZeppelin v5**.
+⚠️ **This is NOT a security offering** - Tokens represent utility, not equity.
 
 ---
 
-## 📦 **Contratos**
+## 📋 Contract Architecture v2.0
 
-### **1️⃣ AHTToken.sol** (280 líneas)
-**Token ERC20 de la plataforma**
+### Core Contracts (Legal Compliant)
 
-- **Supply fijo**: 1,000,000 AHT
-- **Decimales**: 18
-- **Premium Panel**: Requiere 300+ AHT
-- **Features**: Burnable, Pausable, Access Control
-- **Roles**: ADMIN, MINTER, PAUSER
+| Contract | Purpose | Status | Lines |
+|----------|---------|--------|-------|
+| **DecoAccessToken.sol** | ERC-20 utility access token (1M supply) | ✅ Active | 310 |
+| **CrowdfundAccess.sol** | Accept stablecoins, distribute DECO | ✅ Active | 430 |
+| **UsageContract.sol** | Lock & consume tokens for AI services | ✅ Active | 480 |
+| **TreasuryUsage.sol** | Circular token reallocation | ✅ Active | 490 |
+
+### Archived Contracts (v1.0 - Deprecated)
+
+⚠️ **DO NOT USE** - Replaced by legal-compliant architecture
+
+- `archive/AHTToken.sol` - Old investment-focused token
+- `archive/AdminPool.sol` - Old commission pool
+- `archive/SponsorPool.sol` - Old sponsor earnings
+
+---
+
+## 🪙 DECO Token Economics
+
+### Token Specifications
 
 ```solidity
-// Verificar premium status
-bool isPremium = ahtToken.hasPremiumStatus(userAddress);
-
-// Check premium details
-(bool hasAccess, uint256 balance, uint256 required, uint256 shortfall) 
-    = ahtToken.checkPremiumStatus(userAddress);
+Name: DecoAccess Token
+Symbol: DECO
+Decimals: 18
+Total Supply: 1,000,000 DECO (fixed)
+Initial Allocation: 100,000 DECO (10% for crowdfund)
+Reserved: 900,000 DECO (90% for future reallocation)
+Blockchain: Binance Smart Chain (BSC)
 ```
+
+### Distribution Model
+
+- **10% Crowdfund** (100k DECO): Initial token sale to early contributors
+- **90% Reserved** (900k DECO): Controlled by TreasuryUsage for:
+  - Welcome bonuses (50k/month)
+  - Marketing campaigns (100k/month)
+  - Community rewards (30k/month)
+  - Developer grants (50k/month)
+  - Emergency reserves (20k/month)
+
+### Membership Requirements
+
+- **Threshold**: 50 DECO minimum
+- **Benefits**: Access to AI trading signals, strategy execution, portfolio analysis
+- **No Lockup**: Tokens available immediately after purchase
+- **No Staking**: Pure consumption model (no yield, no rewards)
 
 ---
 
-### **2️⃣ AdminPool.sol** (450 líneas)
-**Pool de comisiones administrativas (10%)**
+## 🔄 How It Works
 
-- **Recibe**: 10% de comisiones de ciclos completados
-- **Distribución**: 40% Operations, 30% Development, 15% Marketing, 15% Reserve
-- **Features**: Stakeholder management, distribution history
-- **Roles**: ADMIN, OPERATOR, AUDITOR, DISTRIBUTOR
+### 1. Crowdfund Phase (CrowdfundAccess)
 
 ```solidity
-// Backend envia comisión
-adminPool.receiveCommission(usdtAddress, amount, cycleId);
-
-// Admin distribuye fondos
-adminPool.distribute(usdtAddress, 0, "Monthly distribution Q4 2025");
+// User contributes stablecoins (USDC/USDT/BUSD/DAI)
+buyAccess(USDC, 100e18, "contribution-001")
+// → Receives 1,000 DECO (rate: 10 DECO per USD)
+// → Stablecoins go directly to treasury (non-custodial)
 ```
 
----
+**Accepted Stablecoins (BSC BEP-20):**
+- USDC: `0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d`
+- USDT: `0x55d398326f99059fF775485246999027B3197955`
+- BUSD: `0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56`
+- DAI: `0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3`
 
-### **3️⃣ SponsorPool.sol** (550 líneas)
-**Pool de comisiones de sponsors (10%)**
-
-- **Recibe**: 10% de comisiones de referidos
-- **Claims**: Individuales o batch (hasta 50 por transacción)
-- **Features**: Vesting opcional, statistics tracking
-- **Roles**: ADMIN, OPERATOR, AUDITOR
+### 2. Service Usage (UsageContract)
 
 ```solidity
-// Backend registra earning
-sponsorPool.recordEarning(sponsorAddress, usdtAddress, amount, earningId, cycleId, 0);
+// User locks tokens before using AI services (prepayment)
+lockAccessTokens(100e18, "lock-001")
 
-// Sponsor hace claim
-sponsorPool.claimEarning(earningIndex);
+// Backend consumes tokens based on actual usage
+consumeAccess(user, 0, "AI_SIGNAL_GENERATION", 10, "usage-001")
+// → 10 signals × 0.1 DECO = 1 DECO consumed
 
-// Batch claims (gas-efficient)
-sponsorPool.claimMultipleEarnings([0, 1, 2, 3]);
+// User unlocks remaining tokens
+unlockTokens(0) // Returns unconsumed balance
+```
+
+**Service Pricing:**
+- AI Signal Generation: 0.1 DECO per signal
+- Strategy Execution: 0.5 DECO per execution
+- Portfolio Analysis: 0.2 DECO per analysis
+- Market Research: 0.3 DECO per research
+- Backtesting: 1.0 DECO per backtest
+
+### 3. Circular Economy (TreasuryUsage)
+
+```solidity
+// Treasury receives consumed tokens
+receiveConsumedTokens(1e18)
+
+// Reallocate to new users (circular model)
+reallocateAccessTokens(newUser, 50e18, "WELCOME_BONUS", "New user incentive")
+// → Tokens back in circulation
 ```
 
 ---
 
-## 🏗️ **Arquitectura**
+## 🏗️ Development Setup
 
-```
-Usuario completa ciclo 200% 
-         ↓
-Backend calcula comisión 20%
-         ↓
-    ┌────────────┐
-    │ 20% Split  │
-    └────────────┘
-         ↓
-    ┌─────┴─────┐
-    ↓           ↓
-10% Admin   10% Sponsor
-    ↓           ↓
-AdminPool  SponsorPool
-(on-chain) (on-chain)
-```
+### Prerequisites
 
-**Tokens soportados**: USDT, USDC (BSC)
+- Node.js v18+
+- npm or yarn
+- BSC wallet with testnet BNB
 
----
-
-## 🚀 **Instalación**
-
-### **Requisitos**
-- Node.js >= 18
-- Yarn o npm
-- Wallet con BNB (para gas)
-
-### **Setup**
+### Installation
 
 ```bash
-# Clonar repositorio
+# Clone repository
 git clone https://github.com/deco31416/trading-deco-contracts.git
 cd trading-deco-contracts
 
-# Instalar dependencias
+# Install dependencies
 npm install
-# o
-yarn install
 
-# Copiar variables de entorno
+# Copy environment file
 cp .env.example .env
+# Edit .env with your PRIVATE_KEY and BSCSCAN_API_KEY
 ```
 
-### **Configurar .env**
+### Compile Contracts
 
-```env
-# Private key (sin 0x)
-PRIVATE_KEY=your_private_key_here
-
-# BscScan API Key
-BSCSCAN_API_KEY=your_bscscan_api_key_here
-
-# Addresses
-TREASURY_ADDRESS=your_treasury_wallet
-ADMIN_ADDRESS=your_admin_wallet
-```
-
----
-
-## 🌐 **Deployment**
-
-### **Compilar Contratos**
 ```bash
 npx hardhat compile
 ```
 
-### **Deploy en BSC Testnet**
+### Run Tests
+
+```bash
+npx hardhat test
+npm run test:coverage
+```
+
+### Deploy to BSC Testnet
+
 ```bash
 npx hardhat run scripts/deploy.ts --network bscTestnet
 ```
 
-### **Deploy en BSC Mainnet**
+### Deploy to BSC Mainnet
+
 ```bash
 npx hardhat run scripts/deploy.ts --network bscMainnet
 ```
 
-### **Verificar en BscScan**
-```bash
-# Testnet
-npx hardhat run scripts/verify.ts --network bscTestnet
+### Verify on BscScan
 
-# Mainnet
+```bash
 npx hardhat run scripts/verify.ts --network bscMainnet
 ```
 
 ---
 
-## 🧪 **Testing**
+## 📁 Project Structure
 
-```bash
-# Run tests
-npx hardhat test
-
-# Coverage
-npx hardhat coverage
-
-# Gas report
-REPORT_GAS=true npx hardhat test
+```
+trading-deco-contracts/
+├── contracts/
+│   ├── DecoAccessToken.sol       # Main utility token
+│   ├── CrowdfundAccess.sol       # Token distribution
+│   ├── UsageContract.sol         # Service consumption
+│   ├── TreasuryUsage.sol         # Token reallocation
+│   └── archive/                  # Deprecated contracts
+│       ├── AHTToken.sol
+│       ├── AdminPool.sol
+│       └── SponsorPool.sol
+├── scripts/
+│   ├── deploy.ts                 # Deployment script
+│   └── verify.ts                 # Verification script
+├── test/
+│   └── (test files)
+├── hardhat.config.ts             # Hardhat configuration
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
 ---
 
-## 🔒 **Seguridad**
+## 🔒 Security Features
 
-### **Auditoría Completa ✅**
+### OpenZeppelin v5.x Integration
 
-| Protección | Implementación |
-|------------|----------------|
-| **Reentrancy** | ✅ `ReentrancyGuard` + `nonReentrant` |
-| **Race Conditions** | ✅ Checks-Effects-Interactions |
-| **Overflow/Underflow** | ✅ Solidity 0.8.20 (auto) |
-| **Access Control** | ✅ OpenZeppelin `AccessControl` |
-| **Pausable** | ✅ Emergency stop mechanism |
-| **Safe Transfers** | ✅ `SafeERC20` |
+All contracts inherit from audited OpenZeppelin libraries:
 
-### **Roles y Permisos**
+- `ERC20`: Standard token implementation
+- `ERC20Burnable`: Token burning capability
+- `ERC20Pausable`: Emergency pause mechanism
+- `Ownable`: Access control
+- `ReentrancyGuard`: Prevents reentrancy attacks
+- `SafeERC20`: Safe token transfers
 
-#### **AHTToken**
-- `DEFAULT_ADMIN_ROLE`: Control total
-- `MINTER_ROLE`: Mintear tokens (vesting)
-- `PAUSER_ROLE`: Pausar/despausar
+### Additional Safeguards
 
-#### **AdminPool**
-- `DEFAULT_ADMIN_ROLE`: Control total
-- `OPERATOR_ROLE`: Recibir comisiones
-- `DISTRIBUTOR_ROLE`: Distribuir fondos
-- `AUDITOR_ROLE`: Ver estadísticas
-
-#### **SponsorPool**
-- `DEFAULT_ADMIN_ROLE`: Control total
-- `OPERATOR_ROLE`: Registrar earnings
-- `AUDITOR_ROLE`: Ver estadísticas
+- ✅ Non-custodial design (no user funds held)
+- ✅ Rate limiting (contribution/allocation limits)
+- ✅ Emergency pause functionality
+- ✅ Multi-signature support (for large operations)
+- ✅ Event logging (full transparency)
+- ✅ Decimal normalization (handles 6/18 decimal tokens)
 
 ---
 
-## 🔗 **Integración con Backend**
+## 🌐 Network Configuration
 
-### **1. Instalación en Backend NestJS**
+### BSC Testnet
 
-```bash
-cd ../trading-deco  # Backend repo
-yarn add ethers@6
-```
+- **Chain ID**: 97
+- **RPC**: `https://data-seed-prebsc-1-s1.binance.org:8545/`
+- **Explorer**: https://testnet.bscscan.com
+- **Faucet**: https://testnet.bnbchain.org/faucet-smart
 
-### **2. Crear BlockchainService**
+### BSC Mainnet
+
+- **Chain ID**: 56
+- **RPC**: `https://bsc-dataseed1.binance.org/`
+- **Explorer**: https://bscscan.com
+
+---
+
+## 📊 Integration with Backend
+
+### NestJS Integration Example
 
 ```typescript
-// src/blockchain/blockchain.service.ts
+// contracts.service.ts
 import { Injectable } from '@nestjs/common';
 import { ethers } from 'ethers';
 
 @Injectable()
-export class BlockchainService {
+export class ContractsService {
   private provider: ethers.JsonRpcProvider;
   private wallet: ethers.Wallet;
-  
-  // Contract instances
-  private adminPool: ethers.Contract;
-  private sponsorPool: ethers.Contract;
+  private decoToken: ethers.Contract;
+  private usageContract: ethers.Contract;
 
   constructor() {
     this.provider = new ethers.JsonRpcProvider(process.env.BSC_RPC_URL);
-    this.wallet = new ethers.Wallet(process.env.OPERATOR_PRIVATE_KEY, this.provider);
-    
-    // Initialize contracts
-    this.adminPool = new ethers.Contract(
-      process.env.ADMIN_POOL_ADDRESS,
-      AdminPoolABI,
+    this.wallet = new ethers.Wallet(process.env.PRIVATE_KEY, this.provider);
+
+    this.decoToken = new ethers.Contract(
+      process.env.DECO_TOKEN_ADDRESS,
+      DecoAccessTokenABI,
       this.wallet
     );
-    
-    this.sponsorPool = new ethers.Contract(
-      process.env.SPONSOR_POOL_ADDRESS,
-      SponsorPoolABI,
+
+    this.usageContract = new ethers.Contract(
+      process.env.USAGE_CONTRACT_ADDRESS,
+      UsageContractABI,
       this.wallet
     );
   }
 
-  async sendAdminCommission(token: string, amount: string, cycleId: string) {
-    const tx = await this.adminPool.receiveCommission(token, amount, cycleId);
-    return await tx.wait();
+  // Check if user has membership
+  async hasMembership(userAddress: string): Promise<boolean> {
+    return await this.decoToken.hasMembership(userAddress);
   }
 
-  async recordSponsorEarning(
-    sponsor: string,
-    token: string,
-    amount: string,
-    earningId: string,
-    cycleId: string
+  // Consume tokens for service usage
+  async consumeAccess(
+    userAddress: string,
+    lockIndex: number,
+    serviceType: string,
+    units: number,
+    usageId: string
   ) {
-    const tx = await this.sponsorPool.recordEarning(
-      sponsor,
-      token,
-      amount,
-      earningId,
-      cycleId,
-      0 // no vesting
+    const tx = await this.usageContract.consumeAccess(
+      userAddress,
+      lockIndex,
+      serviceType,
+      units,
+      usageId
     );
     return await tx.wait();
+  }
+
+  // Get user's available balance
+  async getAvailableBalance(userAddress: string): Promise<string> {
+    const balance = await this.usageContract.getAvailableBalance(userAddress);
+    return ethers.formatEther(balance);
   }
 }
 ```
 
-### **3. Modificar PaymentsService**
+---
 
-```typescript
-// src/modules/payments/payments.service.ts
-async calculateAndCreateCommission(cycle: TradingCycle) {
-  // ... cálculos existentes ...
-  
-  // 🔥 Enviar a blockchain
-  const adminCommission = totalCommission * 0.5; // 10%
-  const sponsorCommission = totalCommission * 0.5; // 10%
-  
-  // Send to AdminPool
-  await this.blockchainService.sendAdminCommission(
-    usdtAddress,
-    ethers.parseUnits(adminCommission.toString(), 6), // USDT = 6 decimals
-    cycle._id.toString()
-  );
-  
-  // Send to SponsorPool
-  await this.blockchainService.recordSponsorEarning(
-    sponsorWallet,
-    usdtAddress,
-    ethers.parseUnits(sponsorCommission.toString(), 6),
-    earningDoc._id.toString(),
-    cycle._id.toString()
-  );
-}
+## 📚 Documentation
+
+- [System Overview](../docs/01-GENERAL/system-overview.md)
+- [Smart Contracts Integration](../docs/04-INTEGRACION/smart-contracts-integration.md)
+- [Deployment Guide](../docs/05-DEPLOYMENT/railway-deploy.md)
+- [Testing Guide](../docs/06-TESTING/integration-testing.md)
+
+---
+
+## 🛠️ Useful Commands
+
+```bash
+# Compile contracts
+npm run compile
+
+# Run tests
+npm run test
+
+# Generate coverage report
+npm run test:coverage
+
+# Deploy to testnet
+npm run deploy:testnet
+
+# Deploy to mainnet
+npm run deploy:mainnet
+
+# Verify contracts
+npm run verify
+
+# Clean artifacts
+npm run clean
+
+# Lint Solidity files
+npm run lint
 ```
 
 ---
 
-## 📊 **Contract Addresses**
+## 📊 Contract Addresses
 
-### **BSC Testnet (Chain ID: 97)**
+### BSC Testnet (Chain ID: 97)
 ```
-AHTToken:    [Pending Deployment]
-AdminPool:   [Pending Deployment]
-SponsorPool: [Pending Deployment]
+DecoAccessToken:  [Pending Deployment]
+CrowdfundAccess:  [Pending Deployment]
+UsageContract:    [Pending Deployment]
+TreasuryUsage:    [Pending Deployment]
 ```
 
-### **BSC Mainnet (Chain ID: 56)**
+### BSC Mainnet (Chain ID: 56)
 ```
-AHTToken:    [Pending Deployment]
-AdminPool:   [Pending Deployment]
-SponsorPool: [Pending Deployment]
+DecoAccessToken:  [Pending Deployment]
+CrowdfundAccess:  [Pending Deployment]
+UsageContract:    [Pending Deployment]
+TreasuryUsage:    [Pending Deployment]
 ```
 
 ---
 
-## 📚 **Recursos**
+## ⚖️ Legal Disclaimer
 
-- [Hardhat Documentation](https://hardhat.org/docs)
-- [OpenZeppelin Contracts](https://docs.openzeppelin.com/contracts/)
-- [BSC Documentation](https://docs.bnbchain.org/)
-- [BscScan API](https://docs.bscscan.com/)
-- [Ethers.js v6](https://docs.ethers.org/v6/)
+**IMPORTANT**: These smart contracts are designed as a **utility token system**, NOT as:
+
+- ❌ Investment contracts
+- ❌ Security offerings
+- ❌ Profit-sharing mechanisms
+- ❌ Yield-generating protocols
+
+**DECO tokens provide**:
+
+- ✅ Access to AI trading software
+- ✅ Consumption-based service usage
+- ✅ Membership benefits (like SaaS subscriptions)
+
+**No promises of**:
+
+- ❌ Financial returns
+- ❌ Profit or yield
+- ❌ Investment gains
+- ❌ Passive income
+
+Users acquire tokens to **USE THE SOFTWARE**, not to invest or earn returns.
 
 ---
 
-## 👥 **Contributors**
+## 📞 Contact & Support
+
+- **Security Issues**: security@tradingdeco.com
+- **General Support**: support@tradingdeco.com
+- **GitHub Issues**: https://github.com/deco31416/trading-deco-contracts/issues
+
+---
+
+## 📄 License
+
+MIT License - See LICENSE file for details
+
+---
+
+## 👥 Contributors
 
 - **Trading Deco Team** - [GitHub](https://github.com/deco31416)
 
 ---
 
-## 📄 **License**
-
-MIT License - see [LICENSE](LICENSE) file for details
-
----
-
-## 🆘 **Support**
-
-- **Email**: security@tradingdeco.com
-- **GitHub Issues**: [Create Issue](https://github.com/deco31416/trading-deco-contracts/issues)
+**Version**: 2.0.0 (Legal-Compliant Architecture)  
+**Last Updated**: December 2024  
+**Solidity Version**: ^0.8.20  
+**Network**: Binance Smart Chain (BSC)  
 
 ---
 
