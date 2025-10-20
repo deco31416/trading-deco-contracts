@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
- * @title DecoAccessToken
+ * @title CoreDecoAccess
  * @dev DECO - Software Utility Access Token (NOT AN INVESTMENT)
  * 
  * LEGAL COMPLIANCE:
@@ -36,7 +36,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
  * @custom:security-contact security@tradingdeco.com
  * @custom:legal-disclaimer This is NOT a security or investment contract
  */
-contract DecoAccessToken is 
+contract CoreDecoAccess is 
     ERC20, 
     ERC20Burnable, 
     ERC20Pausable, 
